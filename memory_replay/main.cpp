@@ -47,6 +47,7 @@ static size_t GetMaxAllocs(const memory_trace::Entry* entries, size_t num_entrie
   for (size_t i = 0; i < num_entries; i++) {
     switch (entries[i].type) {
       case memory_trace::THREAD_DONE:
+      case memory_trace::UNKNOWN:
         break;
       case memory_trace::MALLOC:
       case memory_trace::CALLOC:
@@ -94,7 +95,7 @@ static void PrintLogStats(const char* log_name) {
       }
       // EAGAIN means there is nothing left to read when ANDROID_LOG_NONBLOCK is set.
       if (retval != -EAGAIN) {
-        printf("Failed to read log entry: %s\n", strerrordesc_np(retval));
+        printf("Failed to read log entry: %s\n", strerror(-retval));
       }
       break;
     }
@@ -183,8 +184,10 @@ static void ProcessDump(const memory_trace::Entry* entries, size_t num_entries,
   NativeFormatFloat(buffer, sizeof(buffer), total_nsecs, 1000000000);
   dprintf(STDOUT_FILENO, "Total Allocation/Free Time: %" PRIu64 "ns %ss\n", total_nsecs, buffer);
 
+#if defined(__BIONIC__)
   // Send native allocator stats to the log
   mallopt(M_LOG_STATS, 0);
+#endif
 
   // No need to avoid allocations at this point since all stats have been sent to the log.
   printf("Native Allocator Stats:\n");

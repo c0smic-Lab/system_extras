@@ -173,6 +173,7 @@ class RecordCommand : public Command {
 "               2) a raw PMU event in rN format. N is a hex number.\n"
 "                  For example, r1b selects event number 0x1b.\n"
 "               3) a kprobe event added by --kprobe option.\n"
+"               4) a uprobe event added by --uprobe option.\n"
 "             Modifiers can be added to define how the event should be\n"
 "             monitored. Possible modifiers are:\n"
 "                u - monitor user space events only\n"
@@ -188,6 +189,13 @@ class RecordCommand : public Command {
 "             Documentation/trace/kprobetrace.rst in the kernel. Examples:\n"
 "               'p:myprobe do_sys_openat2 $arg2:string'   - add event kprobes:myprobe\n"
 "               'r:myretprobe do_sys_openat2 $retval:s64' - add event kprobes:myretprobe\n"
+"--uprobe uprobe_event1,uprobe_event2,...\n"
+"             Add uprobe events during recording. The uprobe_event format is in\n"
+"             Documentation/trace/uprobetracer.rst in the kernel. Examples:\n"
+"               'p:myprobe /system/lib64/libc.so:0x1000'\n"
+"                   - add event uprobes:myprobe\n"
+"               'r:myretprobe /system/lib64/libc.so:0x1000'\n"
+"                   - add event uprobes:myretprobe\n"
 "--add-counter event1,event2,...     Add additional event counts in record samples. For example,\n"
 "                                    we can use `-e cpu-cycles --add-counter instructions` to\n"
 "                                    get samples for cpu-cycles event, while having instructions\n"
@@ -592,6 +600,12 @@ bool RecordCommand::PrepareRecording(Workload* workload) {
 
   // 3. Process options before opening perf event files.
   exclude_kernel_callchain_ = event_selection_set_.ExcludeKernel();
+#if defined(__ANDROID__)
+  // Enforce removing kernel IP addresses to prevent KASLR disclosure.
+  if (!IsRoot()) {
+    exclude_kernel_callchain_ = true;
+  }
+#endif  // defined(__ANDROID__)
   if (trace_offcpu_ && !TraceOffCpu()) {
     return false;
   }
@@ -1126,7 +1140,15 @@ bool RecordCommand::ParseOptions(const std::vector<std::string>& args,
   for (const OptionValue& value : options.PullValues("--kprobe")) {
     std::vector<std::string> cmds = android::base::Split(value.str_value, ",");
     for (const auto& cmd : cmds) {
-      if (!probe_events.AddKprobe(cmd)) {
+      if (!probe_events.AddProbe(ProbeEventType::kKprobe, cmd)) {
+        return false;
+      }
+    }
+  }
+  for (const OptionValue& value : options.PullValues("--uprobe")) {
+    std::vector<std::string> cmds = android::base::Split(value.str_value, ",");
+    for (const auto& cmd : cmds) {
+      if (!probe_events.AddProbe(ProbeEventType::kUprobe, cmd)) {
         return false;
       }
     }
@@ -1244,6 +1266,12 @@ bool RecordCommand::ParseOptions(const std::vector<std::string>& args,
 
   CHECK(options.values.empty());
 
+  bool check_event_type = true;
+  if (!app_package_name_.empty() && !in_app_context_ && !IsRoot()) {
+    // Defer event type checking when RunInAppContext() is called.
+    check_event_type = false;
+  }
+
   // Process ordered options.
   for (const auto& pair : ordered_options) {
     const OptionName& name = pair.first;
@@ -1263,6 +1291,7 @@ bool RecordCommand::ParseOptions(const std::vector<std::string>& args,
           return false;
         }
         rate.sample_freq = value.uint_value;
+        max_sample_freq_ = std::max(max_sample_freq_, rate.sample_freq);
       }
       event_selection_set_.SetSampleRateForNewEvents(rate);
 
@@ -1306,7 +1335,7 @@ bool RecordCommand::ParseOptions(const std::vector<std::string>& args,
         if (!probe_events.CreateProbeEventIfNotExist(event_type)) {
           return false;
         }
-        if (!event_selection_set_.AddEventType(event_type)) {
+        if (!event_selection_set_.AddEventType(event_type, check_event_type)) {
           return false;
         }
       }
@@ -1320,7 +1349,7 @@ bool RecordCommand::ParseOptions(const std::vector<std::string>& args,
           return false;
         }
       }
-      if (!event_selection_set_.AddEventGroup(event_types)) {
+      if (!event_selection_set_.AddEventGroup(event_types, check_event_type)) {
         return false;
       }
     } else if (name == "--tp-filter") {
@@ -1984,14 +2013,18 @@ bool RecordCommand::JoinCallChains() {
 
 static void LoadSymbolMapFile(int pid, const std::string& package, ThreadTree* thread_tree) {
   // On Linux, symbol map files usually go to /tmp/perf-<pid>.map
-  // On Android, there is no directory where any process can create files.
-  // For now, use /data/local/tmp/perf-<pid>.map, which works for standalone programs,
-  // and /data/data/<package>/perf-<pid>.map, which works for apps.
-  auto path = package.empty()
-                  ? android::base::StringPrintf("/data/local/tmp/perf-%d.map", pid)
-                  : android::base::StringPrintf("/data/data/%s/perf-%d.map", package.c_str(), pid);
-
-  auto symbols = ReadSymbolMapFromFile(path);
+  // On Android, use /tmp/perf-<pid>.map and /data/local/tmp/perf-<pid>.map, which works for
+  // standalone programs, and /data/data/<package>/perf-<pid>.map, which works for apps.
+  std::vector<Symbol> symbols;
+  std::string filename = android::base::StringPrintf("perf-%d.map", pid);
+  if (package.empty()) {
+    symbols = ReadSymbolMapFromFile("/tmp/" + filename);
+    if (symbols.empty()) {
+      symbols = ReadSymbolMapFromFile("/data/local/tmp/" + filename);
+    }
+  } else {
+    symbols = ReadSymbolMapFromFile("/data/data/" + package + "/" + filename);
+  }
   if (!symbols.empty()) {
     thread_tree->AddSymbolsForProcess(pid, &symbols);
   }

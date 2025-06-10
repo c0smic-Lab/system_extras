@@ -173,6 +173,8 @@ struct CpuModel {
 };
 
 std::vector<CpuModel> GetCpuModels();
+std::set<int> GetX86IntelAtomCpus();
+std::optional<uint32_t> GetX86IntelAtomCpuEventType();
 
 #endif  // defined(__linux__)
 

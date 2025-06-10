@@ -20,21 +20,13 @@ package {
 python_defaults {
     name: "torq_defaults",
     srcs: [
-        "torq.py",
-        "command.py",
-        "command_executor.py",
-        "validation_error.py",
-        "device.py",
-        "config_builder.py",
-        "open_ui.py",
-        "utils.py",
-        "validate_simpleperf.py",
+        "src/**/*.py",
     ],
 }
 
 python_binary_host {
     name: "torq",
-    main: "torq.py",
+    main: "src/torq.py",
     defaults: ["torq_defaults"],
 }
 
@@ -43,12 +35,7 @@ python_test_host {
     main: "tests/torq_unit_test.py",
     srcs: ["tests/torq_unit_test.py"],
     defaults: ["torq_defaults"],
-    version: {
-        py3: {
-            enabled: true,
-            embedded_launcher: false,
-        },
-    },
+    embedded_launcher: false,
     test_options: {
         unit_test: true,
     },
@@ -59,12 +46,7 @@ python_test_host {
     main: "tests/device_unit_test.py",
     srcs: ["tests/device_unit_test.py"],
     defaults: ["torq_defaults"],
-    version: {
-        py3: {
-            enabled: true,
-            embedded_launcher: false,
-        },
-    },
+    embedded_launcher: false,
     test_options: {
         unit_test: true,
     },
@@ -75,28 +57,18 @@ python_test_host {
     main: "tests/config_builder_unit_test.py",
     srcs: ["tests/config_builder_unit_test.py"],
     defaults: ["torq_defaults"],
-    version: {
-        py3: {
-            enabled: true,
-            embedded_launcher: false,
-        },
-    },
+    embedded_launcher: false,
     test_options: {
         unit_test: true,
     },
 }
 
 python_test_host {
-    name: "command_executor_unit_test",
-    main: "tests/command_executor_unit_test.py",
-    srcs: ["tests/command_executor_unit_test.py"],
+    name: "perfetto_command_executor_unit_test",
+    main: "tests/perfetto_command_executor_unit_test.py",
+    srcs: ["tests/perfetto_command_executor_unit_test.py"],
     defaults: ["torq_defaults"],
-    version: {
-        py3: {
-            enabled: true,
-            embedded_launcher: false,
-        },
-    },
+    embedded_launcher: false,
     test_options: {
         unit_test: true,
     },
@@ -107,12 +79,29 @@ python_test_host {
     main: "tests/validate_simpleperf_unit_test.py",
     srcs: ["tests/validate_simpleperf_unit_test.py"],
     defaults: ["torq_defaults"],
-    version: {
-        py3: {
-            enabled: true,
-            embedded_launcher: false,
-        },
+    embedded_launcher: false,
+    test_options: {
+        unit_test: true,
     },
+}
+
+python_test_host {
+    name: "utils_unit_test",
+    main: "tests/utils_unit_test.py",
+    srcs: ["tests/utils_unit_test.py"],
+    defaults: ["torq_defaults"],
+    embedded_launcher: false,
+    test_options: {
+        unit_test: true,
+    },
+}
+
+python_test_host {
+    name: "open_ui_unit_test",
+    main: "tests/open_ui_unit_test.py",
+    srcs: ["tests/open_ui_unit_test.py"],
+    defaults: ["torq_defaults"],
+    embedded_launcher: false,
     test_options: {
         unit_test: true,
     },

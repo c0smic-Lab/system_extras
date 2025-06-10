@@ -16,6 +16,7 @@
 
 #if defined(__ANDROID__)
 #include <android-base/properties.h>
+#include <sys/prctl.h>
 #endif
 
 #include "command.h"
@@ -74,6 +75,10 @@ int main(int argc, char** argv) {
 #if defined(__ANDROID__)
   if (!AndroidSecurityCheck()) {
     return 1;
+  }
+  if (IsInAppUid()) {
+    // Disable core dump in app context to avoid leaking raw sample info.
+    prctl(PR_SET_DUMPABLE, 0);
   }
 #endif
   RegisterAllCommands();

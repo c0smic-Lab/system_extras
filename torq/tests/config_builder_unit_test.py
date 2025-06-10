@@ -17,9 +17,9 @@
 import unittest
 import builtins
 from unittest import mock
-from config_builder import build_default_config, build_custom_config
-from command import ProfilerCommand
-from torq import DEFAULT_DUR_MS
+from src.config_builder import build_default_config, build_custom_config
+from src.command import ProfilerCommand
+from src.torq import DEFAULT_DUR_MS
 
 TEST_FAILURE_MSG = "Test failure."
 TEST_DUR_MS = 9000
@@ -339,7 +339,7 @@ class ConfigBuilderUnitTest(unittest.TestCase):
   def setUp(self):
     self.command = ProfilerCommand(
         None, "custom", None, None, DEFAULT_DUR_MS, None, None, "test-path",
-        None, None, None, None, None, None, None)
+        None, None, None, None, None, None, None, None, None)
 
   def test_build_default_config_setting_valid_dur_ms(self):
     self.command.dur_ms = TEST_DUR_MS

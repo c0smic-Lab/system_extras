@@ -107,9 +107,9 @@ class EventSelectionSet {
 
   bool empty() const { return groups_.empty(); }
 
-  bool AddEventType(const std::string& event_name);
+  bool AddEventType(const std::string& event_name, bool check = true);
   bool AddEventType(const std::string& event_name, const SampleRate& sample_rate);
-  bool AddEventGroup(const std::vector<std::string>& event_names);
+  bool AddEventGroup(const std::vector<std::string>& event_names, bool check = true);
   // For each sample generated for the existing event group, add counters for selected events.
   bool AddCounters(const std::vector<std::string>& event_names);
   std::vector<const EventType*> GetEvents() const;
@@ -165,6 +165,7 @@ class EventSelectionSet {
   IOEventLoop* GetIOEventLoop() { return loop_.get(); }
 
   bool OpenEventFiles();
+  bool OpenEventFilesForThreads(const std::set<pid_t>& threads);
   bool ReadCounters(std::vector<CountersInfo>* counters);
   bool MmapEventFiles(size_t min_mmap_pages, size_t max_mmap_pages, size_t aux_buffer_size,
                       size_t record_buffer_size, bool allow_truncating_samples, bool exclude_perf);
@@ -206,7 +207,7 @@ class EventSelectionSet {
   };
 
   bool BuildAndCheckEventSelection(const std::string& event_name, bool first_event,
-                                   EventSelection* selection);
+                                   EventSelection* selection, bool check);
   void UnionSampleType();
   void SetSampleRateForGroup(EventSelectionGroup& group, const SampleRate& rate);
   bool OpenEventFilesOnGroup(EventSelectionGroup& group, pid_t tid, int cpu,
@@ -248,6 +249,7 @@ bool IsSettingClockIdSupported();
 bool IsMmap2Supported();
 bool IsHardwareEventSupported();
 bool IsSwitchRecordSupported();
+bool IsKernelEventSupported();
 
 }  // namespace simpleperf
 

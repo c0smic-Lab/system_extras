@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 #include <strings.h>
+#include <functional>
 #include <memory>
 #include <set>
 #include <string>
@@ -58,6 +59,7 @@ struct EventType {
   bool IsTracepointEvent() const { return type == PERF_TYPE_TRACEPOINT; }
 
   std::vector<int> GetPmuCpumask();
+  uint64_t GetIntelAtomCpuConfig() const;
 
   std::string name;
   uint32_t type;

@@ -29,6 +29,7 @@ enum TypeEnum : uint8_t {
   REALLOC,
   FREE,
   THREAD_DONE,
+  UNKNOWN,
 };
 
 struct Entry {
@@ -41,6 +42,7 @@ struct Entry {
     uint64_t n_elements;
     uint64_t align;
   } u;
+  int64_t present_bytes = -1;
   uint64_t start_ns = 0;
   uint64_t end_ns = 0;
 };

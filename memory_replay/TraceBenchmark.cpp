@@ -138,6 +138,7 @@ static void GetTraceData(const std::string& filename, TraceDataType* trace_data)
         }
         break;
       case memory_trace::THREAD_DONE:
+      case memory_trace::UNKNOWN:
         break;
     }
   }
@@ -165,7 +166,7 @@ static void RunTrace(benchmark::State& state, TraceDataType* trace_data) {
         if (ptr == nullptr) {
           errx(1, "malloc returned nullptr");
         }
-        MakeAllocationResident(ptr, entry.size, pagesize);
+        MakeAllocationResident(ptr, entry.size, entry.present_bytes, pagesize);
         total_ns += Nanotime() - start_ns;
 
         if (ptrs[entry.ptr] != nullptr) {
@@ -180,7 +181,7 @@ static void RunTrace(benchmark::State& state, TraceDataType* trace_data) {
         if (ptr == nullptr) {
           errx(1, "calloc returned nullptr");
         }
-        MakeAllocationResident(ptr, entry.size, pagesize);
+        MakeAllocationResident(ptr, entry.size, entry.present_bytes, pagesize);
         total_ns += Nanotime() - start_ns;
 
         if (ptrs[entry.ptr] != nullptr) {
@@ -195,7 +196,7 @@ static void RunTrace(benchmark::State& state, TraceDataType* trace_data) {
         if (ptr == nullptr) {
           errx(1, "memalign returned nullptr");
         }
-        MakeAllocationResident(ptr, entry.size, pagesize);
+        MakeAllocationResident(ptr, entry.size, entry.present_bytes, pagesize);
         total_ns += Nanotime() - start_ns;
 
         if (ptrs[entry.ptr] != nullptr) {
@@ -216,7 +217,7 @@ static void RunTrace(benchmark::State& state, TraceDataType* trace_data) {
           if (ptr == nullptr) {
             errx(1, "realloc returned nullptr");
           }
-          MakeAllocationResident(ptr, entry.size, pagesize);
+          MakeAllocationResident(ptr, entry.size, entry.present_bytes, pagesize);
         }
         total_ns += Nanotime() - start_ns;
 
@@ -239,6 +240,7 @@ static void RunTrace(benchmark::State& state, TraceDataType* trace_data) {
         break;
 
       case memory_trace::THREAD_DONE:
+      case memory_trace::UNKNOWN:
         break;
     }
   }

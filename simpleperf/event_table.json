@@ -966,6 +966,26 @@
         ]
       },
       {
+        "name": "Cortex-A725",
+        "implementer": "0x41",
+        "partnum": "0xd87",
+        "common_events": [
+          "0x0000", "0x0001", "0x0002", "0x0003", "0x0004", "0x0005", "0x0008", "0x0009", "0x000A", "0x000B", "0x000C", "0x000D", "0x000E", "0x0010", "0x0011", "0x0012",
+          "0x0013", "0x0014", "0x0015", "0x0016", "0x0017", "0x0018", "0x0019", "0x001B", "0x001C", "0x001D", "0x0020", "0x0021", "0x0022", "0x0023", "0x0024", "0x0025",
+          "0x0026", "0x0027", "0x0028", "0x0029", "0x002A", "0x002B", "0x002D", "0x002F", "0x0031", "0x0032", "0x0033", "0x0034", "0x0035", "0x0036", "0x0037", "0x0039",
+          "0x003A", "0x003C", "0x003D", "0x003E", "0x003F", "0x0040", "0x0041", "0x0044", "0x0045", "0x0048", "0x0050", "0x0051", "0x0052", "0x0053", "0x0056", "0x0057",
+          "0x0058", "0x0060", "0x0061", "0x0066", "0x0067", "0x006E", "0x006F", "0x0070", "0x0071", "0x0073", "0x0074", "0x0075", "0x0076", "0x0077", "0x007C", "0x007D",
+          "0x007E", "0x0081", "0x0082", "0x0083", "0x0084", "0x0086", "0x0087", "0x0088", "0x008A", "0x008B", "0x008C", "0x008D", "0x008E", "0x008F", "0x0090", "0x0091",
+          "0x00A0", "0x4000", "0x4001", "0x4002", "0x4003", "0x4004", "0x4005", "0x4006", "0x4009", "0x400A", "0x400B", "0x400C", "0x4010", "0x4011", "0x4012", "0x4013",
+          "0x4018", "0x4019", "0x401A", "0x401B", "0x4020", "0x4021", "0x4022", "0x4024", "0x4025", "0x4026", "0x8005", "0x8006", "0x8014", "0x8018", "0x801C", "0x8074",
+          "0x8075", "0x8076", "0x8077", "0x8079", "0x80BC", "0x80BD", "0x80C0", "0x80C1", "0x80E3", "0x80E7", "0x80EB", "0x80EF", "0x8108", "0x810C", "0x8110", "0x8111",
+          "0x8112", "0x8113", "0x8114", "0x8115", "0x8116", "0x8117", "0x811C", "0x811D", "0x8120", "0x8121", "0x8124", "0x8128", "0x8129", "0x812A", "0x812B", "0x812C",
+          "0x812D", "0x812E", "0x812F", "0x8134", "0x8135", "0x8136", "0x8137", "0x8138", "0x8139", "0x813A", "0x813B", "0x8140", "0x8148", "0x8149", "0x8152", "0x8154",
+          "0x8158", "0x8159", "0x815B", "0x815C", "0x8160", "0x8162", "0x8164", "0x8165", "0x8167", "0x8168", "0x816A", "0x816B", "0x816D", "0x8171", "0x8172", "0x8173",
+          "0x81BC", "0x8285", "0x828D", "0x829A"
+        ]
+      },
+      {
         "name": "Cortex-X1",
         "implementer": "0x41",
         "partnum": "0xd44",
@@ -1045,7 +1065,40 @@
   },
   "x86-intel": {
     "events": [
-      ["0x20c4", "BR_INST_RETIRED.NEAR_TAKEN", "Taken branch instructions retired"]
+      ["0x0160", "BACLEARS.ANY", "Count the number of BACLEARS occur when Branch Target Buffer prediction or lackthereof", "atom=0x01e6"],
+      ["0x00c4", "BR_INST_RETIRED.ALL_BRANCHES", "Count all branch instructions retired", "atom=0x00c4"],
+      ["0x11c4", "BR_INST_RETIRED.COND", "Count conditional branch instructions retired", "atom=0x7ec4"],
+      ["0x10c4", "BR_INST_RETIRED.COND_NTAKEN", "Count not taken branch instructions retired","atom=0x0000"],
+      ["0x01c4", "BR_INST_RETIRED.COND_TAKEN", "Counts taken conditional branch instructions retired", "atom=0xfeC4"],
+      ["0x40c4", "BR_INST_RETIRED.FAR_BRANCH", "Counts the number of far branch instructions retired", "atom=0xbfc4"],
+      ["0x80c4", "BR_INST_RETIRED.INDIRECT", "Count near indirect branch instructions retired excluding returns", "atom=0xebc4"],
+      ["0x02c4", "BR_INST_RETIRED.NEAR_CALL", "Count the number of near CALL branch instructions retired", "atom=0xf9c4"],
+      ["0x08c4", "BR_INST_RETIRED.NEAR_RETURN", "Counts the number of near RET branch instructions retired", "atom=0xf7c4"],
+      ["0x20c4", "BR_INST_RETIRED.NEAR_TAKEN", "Counts the number of near taken branch instructions retired", "atom=0xc0c4"],
+      ["0x00c5", "BR_MISP_RETIRED.ALL_BRANCHES", "Counts the total number of mispredicted branch instructions retired", "atom=0x00c5"],
+      ["0x11c5", "BR_MISP_RETIRED.COND", "Counts mispredicted conditional branch instructions retired", "atom=0x7ec5"],
+      ["0x01c5", "BR_MISP_RETIRED.COND_TAKEN", "Counts taken conditional mispredicted branch instructions retired", "atom=0xfec5"],
+      ["0x80c5", "BR_MISP_RETIRED.INDIRECT", "Counts miss-predicted near indirect branch instructions retired excluding returns. TSX abort is an indirect branch.", "atom=0xebc5"],
+      ["0x02c5", "BR_MISP_RETIRED.INDIRECT_CALL", "Counts retired mispredicted indirect (near taken) CALL instructions, including both register and memory indirect.", "atom=0xfbc5"],
+      ["0x08c5", "BR_MISP_RETIRED.RET", "Counts the number of mispredicted near RET branch instructions retired.", "atom=0xf7c5"],
+      ["0x0261", "DSB2MITE_SWITCHES.PENALTY_CYCLES", "event counts fetch penalty cycles when a transition occurs from DSB to MITE","atom=0x0000"],
+      ["0x03C6", "FRONTEND_RETIRED.ANY_DSB_MISS", "Counts retired Instructions that experienced DSB (Decode stream buffer i.e. the decoded instruction-cache) miss","atom=0x0000"],
+      ["0x03C6" , "FRONTEND_RETIRED.DSB_MISS", "event count number of retired Instructions that experienced a critical DSB","atom=0x0000"],
+      ["0x0879", "IDQ.DSB_CYCLES_ANY", "Counts the number of cycles uops delivered to Instruction Decode Queue (IDQ) from the Decode Stream Buffer (DSB) path","atom=0x0000"],
+      ["0x0879", "IDQ.DSB_CYCLES_OK", "Counts the number of cycles where optimal number of uops was delivered to the Instruction Decode Queue (IDQ) from the Decode Stream Buffer (DSB) path","atom=0x0000"],
+      ["0x0879", "IDQ.DSB_UOPS", "Counts the number of uops delivered to Instruction Decode Queue (IDQ) from the Decode Stream Buffer (DSB) path","atom=0x0000"],
+      ["0x0479", "IDQ.MITE_CYCLES_ANY", "Counts the number of cycles uops were delivered to the Instruction Decode Queue (IDQ) from the MITE","atom=0x0000"],
+      ["0x0479", "IDQ.MITE_CYCLES_OK", "Counts the number of cycles where optimal number of uops was delivered to the Instruction Decode Queue (IDQ) from the MITE path","atom=0x0000"],
+      ["0x0479", "IDQ.MITE_UOPS", "Counts the number of uops delivered to Instruction Decode Queue (IDQ) from the MITE path","atom=0x0000"],
+      ["0x2079", "IDQ.MS_CYCLES_ANY", "Counts cycles during which uops are being delivered to Instruction Decode Queue (IDQ) while the Microcode Sequencer (MS) is busy","atom=0x0000"],
+      ["0x2079", "IDQ.MS_SWITCHES", "Number of switches from DSB (Decode Stream Buffer) or MITE (legacy decode pipeline) to the Microcode Sequencer","atom=0x0000"],
+      ["0x2079", "IDQ.MS_UOPS", "Count the number of uops initiated by by MITE or DSB and delivered to Instruction Decode Queue (IDQ) while the Micrococde sequencer (MS) is busy","atom=0x0000"],
+      ["0x019C", "IDQ_UOPS_NOT_DELIVERED.CORE", "Counts the number of uops not delivered to by the Instruction Decode Queue (IDQ) to the back-end of the pipeline when there was no back-end stalls. This event counts for one SMT thread in a given cycle.","atom=0x0000"],
+      ["0x069C", "IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UOPS_DELIV.CORE", "Counts the number of cycles when no uops were delivered by the Instruction Decode Queue (IDQ) to the back-end of the pipeline when there was no back-end stalls. This event counts for one SMT thread in a given cycle.","atom=0x0000"],
+      ["0x069C", "IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UOPS_DELIV.CORE", "Counts the number of cycles when no uops were delivered by the Instruction Decode Queue (IDQ) to the back-end of the pipeline when there was no back-end stalls. This event counts for one SMT thread in a given cycle.","atom=0x0000"],
+      ["0x069C", "IDQ_UOPS_NOT_DELIVERED.CYCLES_FE_WAS_OK", "Counts the number of cycles when the optimal number of uops were delivered by the Instruction Decode Queue (IDQ) to the back-end of the pipeline when there was no back-end stalls. This event counts for one SMT thread in a given cycle.","atom=0x0000"],
+      ["0x0100", "INST_RETIRED.ANY", "Number of instructions retired. Fixed Counter - architectural event","atom=0x0100"],
+      ["0x0200", "CPU_CLK_UNHALTED.THREAD", "Counts the number of unhalted core clock cycles. (Fixed event)","atom=0x0200"]
     ]
   },
   "x86-amd": {
